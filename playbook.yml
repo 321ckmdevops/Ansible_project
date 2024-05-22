@@ -1,0 +1,11 @@
+---
+- name: Configure CA certificates and deploy application
+  hosts: target_hosts
+  become: yes
+  vars_files:
+    - vars/main.yml
+
+  roles:
+    - role: configure_ca_certificates
+    - role: deploy_application
+...

@@ -1,0 +1,32 @@
+---
+- name: Install standard CA certificates
+  apt:
+    name: ca-certificates
+    state: present
+
+- name: Copy custom CA certificates
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/share/ca-certificates/
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - CA1.crt
+    - CA2.crt
+    - CA3.crt
+
+- name: Update CA certificates
+  command: update-ca-certificates
+  register: update_ca_result
+
+- name: Check custom CA certificates validity
+  command: openssl x509 -in /usr/local/share/ca-certificates/{{ item }} -noout -dates
+  loop:
+    - CA1.crt
+    - CA2.crt
+    - CA3.crt
+  register: ca_cert_dates
+  failed_when: "'notAfter=' not in item.stdout or item.stdout.split('notAfter=')[1].strip() < ansible_date_time.iso8601"
+  when: update_ca_result.changed
+

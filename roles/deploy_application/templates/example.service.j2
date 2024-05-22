@@ -1,0 +1,13 @@
+[Unit]
+Description=Example Python Application
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory={{ deployment_location }}
+ExecStart={{ deployment_location }}/venv/bin/flask run -p {{ app_port }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
